@@ -3,54 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GameOver Studios</title>
+    <title>GameOver Studio WEB</title>
     <style>
-        body {
-            background-color: #1a1a1a;
-            color: #ffffff;
-            font-family: 'Courier New', Courier, monospace;
-            text-align: center;
-            padding-top: 100px;
+        /* --- BASIC PAGE SETUP --- */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Courier New', Courier, monospace; /* Game-like font */
+            overflow: hidden; /* Prevent scrollbars on main page */
+            transition: background-color 0.5s ease; /* Smooth transition for background changes */
         }
-        h1 {
-            font-size: 3rem;
+
+        /* --- DEFAULT BACKGROUND (When not hovering) --- */
+        body {
+            background-color: #222; /* Dark default background */
+        }
+
+        /* --- 1. FIRST-TIME VISITOR POPUP (Cookies) --- */
+        .welcome-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(15px); /* Frosted glass blur */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+
+        .popup-content {
+            background: rgba(30, 30, 30, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            color: #fff;
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .popup-content h2 {
+            color: #ffcc00;
+            margin-top: 0;
+        }
+
+        .popup-content button {
+            background-color: #ffcc00;
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .popup-content button:hover {
+            background-color: #fff;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* --- 2. MAIN LAYOUT --- */
+        #main-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* --- 3. SIDE PANEL (Blurred Glass Container) --- */
+        #side-panel {
+            width: 250px; /* Fixed width for the expanded panel */
+            background: rgba(255, 255, 255, 0.1); /* Very transparent base */
+            backdrop-filter: blur(20px); /* The frosted glass effect */
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            padding-top: 20px;
+            transition: width 0.3s ease; /* Smooth transition if we add minimize logic later */
+            z-index: 10;
+        }
+
+        .panel-title {
+            color: #ffcc00;
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 0 20px 20px 20px;
+            margin: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            flex-grow: 1;
+        }
+
+        .nav-links li {
+            margin: 5px 0;
+        }
+
+        .nav-links a {
+            display: block;
+            color: #fff;
+            text-decoration: none;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            transition: background-color 0.2s, color 0.2s;
+            position: relative;
+        }
+
+        /* Hover effect: Change panel background color */
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.2); /* Slight highlight on hover */
             color: #ffcc00;
         }
-        .btn {
-            background-color: #333;
-            color: #fff;
-            border: 3px solid #555;
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            margin: 10px;
-            display: inline-block;
-            text-decoration: none;
+        
+        /* Active page indicator (optional for later) */
+        .nav-links a.active {
+            background-color: rgba(255, 204, 0, 0.2);
+            color: #ffcc00;
+            border-left: 4px solid #ffcc00;
         }
-        .btn:hover {
-            background-color: #555;
-            border-color: #ffcc00;
+
+        /* --- 4. DISPLAY AREA (Image Projector) --- */
+        #display-area {
+            flex-grow: 1; /* Takes up remaining space */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            
+            /* WHITE BOXING: Using solid colors as placeholders for images */
+            background-color: #333; /* Default "no hover" color */
+            transition: background-color 0.5s ease; /* Smooth crossfade */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
+
+        /* --- HOVER LOGIC: Changing Body/Display Background --- */
+        /* NOTE: We target the body background-color or #display-area background-color here */
+
+        /* When hovering over 'MOVIES' */
+        #link-movies:hover ~ #display-area,
+        #link-movies:hover body {
+            background-color: #550000; /* Placeholder red for Movies */
+            /* To use an image later, change line above to: background-image: url('movies_bg.jpg'); */
+        }
+
+        /* When hovering over 'MODS' */
+        #link-mods:hover ~ #display-area,
+        #link-mods:hover body {
+            background-color: #000055; /* Placeholder blue for Mods */
+        }
+
+        /* When hovering over 'GAMES' */
+        #link-games:hover ~ #display-area,
+        #link-games:hover body {
+            background-color: #005500; /* Placeholder green for Games */
+        }
+
+        /* When hovering over 'MUSIC' */
+        #link-music:hover ~ #display-area,
+        #link-music:hover body {
+            background-color: #555500; /* Placeholder yellow/brown for Music */
+        }
+
+        /* When hovering over 'PROFILE' */
+        #link-profile:hover ~ #display-area,
+        #link-profile:hover body {
+            background-color: #550055; /* Placeholder purple for Profile */
+        }
+
     </style>
 </head>
 <body>
 
-    <h1>GAME OVER STUDIOS</h1>
-    <p>Welcome to the official hub.</p>
-    
-    <br>
-    
-    <a href="#" class="btn">[ Watch Shows ]</a>
-    <a href="#" class="btn">[ Get Mods ]</a>
+    <!-- FIRST-TIME VISITOR POPUP -->
+    <div id="welcome-banner" class="welcome-popup">
+        <div class="popup-content">
+            <h2>WELCOME TO</h2>
+            <h1>GameOver Studio</h1>
+            <p>Your hub for original shows, game modifications, music, and more.</p>
+            <button id="close-popup">Enter Site</button>
+        </div>
+    </div>
+
+    <!-- MAIN LAYOUT CONTAINER -->
+    <div id="main-container">
+        
+        <!-- SIDE PANEL -->
+        <nav id="side-panel">
+            <h1 class="panel-title">Discover</h1>
+            <ul class="nav-links">
+                <li><a href="#" id="link-movies">MOVIES</a></li>
+                <li><a href="#" id="link-mods">MODS</a></li>
+                <li><a href="#" id="link-games">GAMES</a></li>
+                <li><a href="#" id="link-music">MUSIC</a></li>
+                <li><a href="#" id="link-profile">PROFILE</a></li>
+            </ul>
+        </nav>
+
+        <!-- DISPLAY AREA (IMAGE PROJECTOR) -->
+        <!-- This area changes color when hovering over links in the panel -->
+        <div id="display-area">
+            <p>Select a category</p>
+        </div>
+
+    </div>
+
+    <!-- JAVASCRIPT FOR COOKIE/POPUP LOGIC -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const banner = document.getElementById("welcome-banner");
+            const closeBtn = document.getElementById("close-popup");
+
+            // Check if the user has visited before
+            if (localStorage.getItem("gostudio_visited")) {
+                // If they have, hide the banner immediately
+                banner.classList.add("hidden");
+            }
+
+            // When they click the button to enter
+            closeBtn.addEventListener("click", function() {
+                // Hide the banner
+                banner.classList.add("hidden");
+                
+                // Save to browser storage so it won't show up next time
+                localStorage.setItem("gostudio_visited", "true");
+            });
+        });
+    </script>
 
 </body>
 </html>
-
-<!-- First-Time Visitor Popup -->
-<div id="welcome-banner" class="welcome-popup">
-    <div class="popup-content">
-        <h2>Welcome to GameOver Studios!</h2>
-        <p>Glad to have you here. Explore our shows, music, and mods.</p>
-        <button id="close-popup">Enter Site</button>
-    </div>
-</div>
